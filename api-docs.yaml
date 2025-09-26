@@ -1,0 +1,695 @@
+openapi: 3.1.0
+info:
+  title: SHREW - Система управления жилой недвижимостью
+  description: |
+    ## Система управления коллекцией квартир и операций с недвижимостью
+
+    ### Основные возможности:
+    - Управление коллекцией объектов недвижимости (CRUD операции)
+    - Фильтрация, сортировка и пагинация объектов
+    - Специальные операции с объектами коллекции
+    - Дополнительные операции через агентство недвижимости
+
+    ### Архитектура:
+    - RESTful API
+    - Ответы в формате JSON
+  version: v1.0.0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Flat API
+  description: API для управления квартирами
+- name: Agency API
+  description: API для выполнения части операций агенства недвижимости
+paths:
+  /api/flats/{id}:
+    get:
+      tags:
+      - Flat API
+      summary: Получить квартиру по ID
+      operationId: getFlat
+      parameters:
+      - name: id
+        in: path
+        description: ID квартиры
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Квартира найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "404":
+          description: Квартира не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      tags:
+      - Flat API
+      summary: Обновить квартиру
+      operationId: updateFlat
+      parameters:
+      - name: id
+        in: path
+        description: ID квартиры
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatDto"
+        required: true
+      responses:
+        "200":
+          description: Квартира успешно обновлена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "400":
+          description: Неверные данные квартиры
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Квартира не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - Flat API
+      summary: Удалить квартиру по ID
+      operationId: deleteFlat
+      parameters:
+      - name: id
+        in: path
+        description: ID квартиры
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: Квартира успешно удалена
+        "404":
+          description: Квартира не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/flats:
+    post:
+      tags:
+      - Flat API
+      summary: Добавить новую квартиру
+      operationId: createFlat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatDto"
+        required: true
+      responses:
+        "201":
+          description: Квартира успешно создана
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "400":
+          description: Неверные данные квартиры
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/flats/unique-living-spaces:
+    get:
+      tags:
+      - Flat API
+      summary: Получить уникальные значения жилой площади
+      operationId: getUniqueLivingSpaces
+      responses:
+        "200":
+          description: Уникальные значения жилой площади получены
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: number
+                  format: double
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+      - Flat API
+      summary: Получить уникальные значения жилой площади
+      operationId: launchUniqueLivingSpacesJob
+      responses:
+        "204":
+          description: Запущен поиск уникальных значений жилой площади
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - Flat API
+      summary: Отменить поиск уникальных значений жилой площади
+      operationId: cancelUniqueLivingSpacesJob
+      responses:
+        "204":
+          description: Поиск уникальных значений жилой площади отменен
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/flats/filter:
+    post:
+      tags:
+      - Flat API
+      summary: "Получить список квартир с фильтрацией, сортировкой и постраничным\
+        \ выводом"
+      operationId: getFlats
+      parameters:
+      - name: sortBy
+        in: query
+        description: "Поле для сортировки (name, area, numberOfRooms, etc.)"
+        required: false
+        schema:
+          type: string
+      - name: sortDirection
+        in: query
+        description: "Направление сортировки (asc, desc)"
+        required: false
+        schema:
+          type: string
+          default: asc
+      - name: pageNumber
+        in: query
+        description: Номер страницы (начиная с 0)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: pageSize
+        in: query
+        description: Размер страницы
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatsFilterDto"
+        required: true
+      responses:
+        "200":
+          description: Список квартир успешно получен
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FlatPageResponse"
+        "400":
+          description: Неверные параметры запроса
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/agency/get-most-expensive/{id1}/{id2}/{id3}:
+    post:
+      tags:
+      - Agency API
+      summary: Выбрать наиболее дорогую квартиру из трёх
+      operationId: getMostExpensive
+      parameters:
+      - name: id1
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id2
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id3
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Квартира найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "404":
+          description: Одна или несколько квартир не найдены
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/agency/find-with-balcony/{cheapest}/{withBalcony}:
+    post:
+      tags:
+      - Agency API
+      summary: Найти самую дешёвую/дорогую квартиру с балконом/без балкона
+      operationId: findWithBalcony
+      parameters:
+      - name: cheapest
+        in: path
+        required: true
+        schema:
+          type: boolean
+      - name: withBalcony
+        in: path
+        required: true
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: Квартира найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "404":
+          description: Квартира не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/flats/rooms-greater-than/{rooms}:
+    get:
+      tags:
+      - Flat API
+      summary: Получить квартиры с количеством комнат больше указанного
+      operationId: getFlatsWithMoreRooms
+      parameters:
+      - name: rooms
+        in: path
+        description: Минимальное количество комнат
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Список квартир получен
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flat"
+        "404":
+          description: Квартир не найдено
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flat"
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/flats/by-furnish/{furnish}:
+    delete:
+      tags:
+      - Flat API
+      summary: Удалить квартиры по типу отделки
+      operationId: deleteByFurnish
+      parameters:
+      - name: furnish
+        in: path
+        description: Тип отделки
+        required: true
+        schema:
+          type: string
+          description: Обустройство дома
+          enum:
+          - DESIGNER
+          - NONE
+          - FINE
+          - BAD
+          - LITTLE
+      responses:
+        "204":
+          description: Квартиры успешно удалены
+        "404":
+          description: Тип отделки не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    Coordinates:
+      type: object
+      description: Координаты
+      properties:
+        x:
+          type: integer
+          format: int64
+          description: Значение должно быть больше -13. Поле не может быть null
+          minimum: -12.999
+          title: Координата X
+        "y":
+          type: number
+          format: float
+          description: Значение должно быть больше -733
+          minimum: -732.999
+          title: Координата Y
+      required:
+      - x
+      - "y"
+    FlatDto:
+      type: object
+      description: Запрос на создание или обновление квартиры
+      properties:
+        name:
+          type: string
+          minLength: 1
+          title: Название квартиры
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+          title: Координаты
+        area:
+          type: integer
+          format: int32
+          description: "Максимальное значение: 784, должно быть больше 0"
+          maximum: 784
+          minimum: 1
+          title: Площадь
+        number_of_rooms:
+          type: integer
+          format: int32
+          description: "Максимальное значение: 8, должно быть больше 0"
+          maximum: 8
+          minimum: 1
+          title: Количество комнат
+        living_space:
+          type: number
+          format: double
+          title: Жилая площадь
+        furnish:
+          type: string
+          description: Обустройство дома
+          enum:
+          - DESIGNER
+          - NONE
+          - FINE
+          - BAD
+          - LITTLE
+          title: Отделка
+        transport:
+          type: string
+          description: Количество транспорта
+          enum:
+          - FEW
+          - NONE
+          - LITTLE
+          - ENOUGH
+          title: Транспортная доступность
+        house:
+          $ref: "#/components/schemas/House"
+          title: Дом
+      required:
+      - area
+      - coordinates
+      - house
+      - living_space
+      - name
+      - number_of_rooms
+      - transport
+    House:
+      type: object
+      description: Дом
+      properties:
+        name:
+          type: string
+          title: Имя дома
+        year:
+          type: integer
+          format: int64
+          maximum: 370
+          minimum: 1
+          title: Год
+        number_of_floors:
+          type: integer
+          format: int32
+          minimum: 1
+          title: Количество этажей
+        number_of_lifts:
+          type: integer
+          format: int32
+          minimum: 1
+          title: Количество лифтов
+      required:
+      - number_of_floors
+      - number_of_lifts
+      - year
+    Flat:
+      type: object
+      description: Квартира
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: "Генерируется автоматически, должно быть больше 0 и уникаль\
+            ным"
+          minimum: 1
+          readOnly: true
+          title: ID квартиры
+        creationDate:
+          type: string
+          format: date
+          description: Генерируется автоматически
+          readOnly: true
+          title: Дата создания
+        name:
+          type: string
+          minLength: 1
+          title: Название квартиры
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+          title: Координаты
+        area:
+          type: integer
+          format: int32
+          description: "Максимальное значение: 784, должно быть больше 0"
+          maximum: 784
+          minimum: 1
+          title: Площадь
+        number_of_rooms:
+          type: integer
+          format: int32
+          description: "Максимальное значение: 8, должно быть больше 0"
+          maximum: 8
+          minimum: 1
+          title: Количество комнат
+        living_space:
+          type: number
+          format: double
+          title: Жилая площадь
+        furnish:
+          type: string
+          description: Обустройство дома
+          enum:
+          - DESIGNER
+          - NONE
+          - FINE
+          - BAD
+          - LITTLE
+          title: Отделка
+        transport:
+          type: string
+          description: Количество транспорта
+          enum:
+          - FEW
+          - NONE
+          - LITTLE
+          - ENOUGH
+          title: Транспортная доступность
+        house:
+          $ref: "#/components/schemas/House"
+          title: Дом
+      required:
+      - area
+      - coordinates
+      - house
+      - living_space
+      - name
+      - number_of_rooms
+      - transport
+    ErrorResponse:
+      type: object
+      description: Ошибка при запросе
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          title: Время ошибки
+        message:
+          type: string
+          title: Сообщение
+        errors:
+          type: array
+          items:
+            type: string
+          title: Список ошибок
+      required:
+      - errors
+      - message
+      - timestamp
+    FlatsFilterDto:
+      type: object
+      description: Поля фильтрации
+      properties:
+        name:
+          type: string
+          title: Имя
+        min_area:
+          type: integer
+          format: int32
+          title: минимальная площадь
+        max_area:
+          type: integer
+          format: int32
+          title: минимальная площадь
+        min_rooms:
+          type: integer
+          format: int32
+          title: минимальная площадь
+        max_rooms:
+          type: integer
+          format: int32
+          title: максимальная площадь
+        furnish:
+          type: string
+          description: Обустройство дома
+          enum:
+          - DESIGNER
+          - NONE
+          - FINE
+          - BAD
+          - LITTLE
+          title: фурнитруа
+        transport:
+          type: string
+          description: Количество транспорта
+          enum:
+          - FEW
+          - NONE
+          - LITTLE
+          - ENOUGH
+          title: транспорт
+    FlatPageResponse:
+      type: object
+      description: Ответ с пагинированным списком квартир
+      properties:
+        flats:
+          type: array
+          description: Список квартир на текущей странице
+          items:
+            $ref: "#/components/schemas/Flat"
+        pageNumber:
+          type: integer
+          format: int32
+          description: Номер текущей страницы (начиная с 0)
+          minimum: 0
+        pageNumberOfElements:
+          type: integer
+          format: int32
+          description: Количество элементов на странице
+        totalPages:
+          type: integer
+          format: int32
+          description: Количество страниц всего
+        numberOfElements:
+          type: integer
+          format: int32
+          description: Количество элементов всего
+      required:
+      - flats
+      - numberOfElements
+      - pageNumber
+      - pageNumberOfElements
+      - totalPages
