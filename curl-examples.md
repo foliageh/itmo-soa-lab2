@@ -8,7 +8,7 @@
 .\test-api.ps1
 
 # Или отдельные команды:
-Invoke-RestMethod -Uri "http://localhost:8080/itmo-soa-lab2-1.0/api/flats" -Method GET
+Invoke-RestMethod -Uri "http://localhost:8080/itmo-soa-lab2-1.0/api/flats/1" -Method GET -SkipHttpErrorCheck
 ```
 
 ### 2. Command Prompt (cmd)
@@ -17,7 +17,7 @@ Invoke-RestMethod -Uri "http://localhost:8080/itmo-soa-lab2-1.0/api/flats" -Meth
 test-api.bat
 
 # Или отдельные команды:
-curl -X GET "http://localhost:8080/itmo-soa-lab2-1.0/api/flats"
+curl -X GET "http://localhost:8080/itmo-soa-lab2-1.0/api/flats/1"
 ```
 
 ## Отдельные curl команды для Windows:

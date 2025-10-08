@@ -93,7 +93,7 @@ curl -X GET "%BASE_URL%/unique-living-spaces"
 
 echo.
 echo 17. Запуск задачи поиска уникальных значений:
-curl -X POST "%BASE_URL%/unique-living-spaces"
+curl -X POST "%BASE_URL%/unique-living-spaces" -H "Content-Type: application/json"
 
 echo.
 echo 18. Отмена задачи поиска уникальных значений:

@@ -21,7 +21,7 @@ $body1 = @{
     transport = "ENOUGH"
     house = @{
         name = "ЖК Солнечный"
-        year = 2020
+        year = 360
         number_of_floors = 15
         number_of_lifts = 2
     }
@@ -43,7 +43,7 @@ $body2 = @{
     transport = "FEW"
     house = @{
         name = "Дом на окраине"
-        year = 2015
+        year = 355
         number_of_floors = 5
         number_of_lifts = 1
     }
@@ -65,7 +65,7 @@ $body3 = @{
     transport = "LITTLE"
     house = @{
         name = "Элитный комплекс"
-        year = 2023
+        year = 363
         number_of_floors = 25
         number_of_lifts = 4
     }
@@ -103,7 +103,7 @@ $updateBody = @{
     transport = "ENOUGH"
     house = @{
         name = "ЖК Солнечный Плюс"
-        year = 2021
+        year = 361
         number_of_floors = 18
         number_of_lifts = 3
     }
@@ -217,7 +217,7 @@ try {
 
 Write-Host "`n15. Запуск задачи поиска уникальных значений:" -ForegroundColor Yellow
 try {
-    Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method POST
+    Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method POST -ContentType "application/json"
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
@@ -259,7 +259,7 @@ $invalidBody = @{
     transport = "ENOUGH"
     house = @{
         name = "Тестовый дом"
-        year = 2020
+        year = 360
         number_of_floors = 10
         number_of_lifts = 1
     }
