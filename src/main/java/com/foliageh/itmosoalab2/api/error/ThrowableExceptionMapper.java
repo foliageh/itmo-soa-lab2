@@ -15,7 +15,7 @@ public class ThrowableExceptionMapper implements ExceptionMapper<Throwable> {
         ErrorResponse body = ErrorResponse.builder()
                 .timestamp(OffsetDateTime.now())
                 .message("Внутренняя ошибка сервера")
-                .errors(List.of(exception.getMessage() == null ? "Internal error" : exception.getMessage()))
+                .errors(List.of(exception.getMessage() == null ? "Внутренняя ошибка сервера" : exception.getMessage()))
                 .build();
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON)

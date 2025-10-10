@@ -23,6 +23,9 @@ import java.util.List;
 public class FlatService {
     @Inject
     FlatRepository repository;
+    
+    @Inject
+    AsyncTaskService asyncTaskService;
 
     public Flat create(@Valid FlatDto dto) {
         Flat entity = FlatMapper.toEntity(dto);
@@ -83,13 +86,23 @@ public class FlatService {
     }
 
     public List<Double> getUniqueLivingSpaces() {
-        return java.util.Collections.emptyList();
+        if (asyncTaskService.isTaskInProgress())
+            return null;
+        if (asyncTaskService.isTaskCompleted())
+            return asyncTaskService.getTaskResult();
+        throw new NotFoundException("No task found");
     }
 
-    public void launchUniqueLivingSpacesJob() {
+    public boolean launchUniqueLivingSpacesJob() {
+        return asyncTaskService.launchUniqueLivingSpacesJob();
     }
 
-    public void cancelUniqueLivingSpacesJob() {
+    public boolean cancelUniqueLivingSpacesJob() {
+        return asyncTaskService.cancelUniqueLivingSpacesJob();
+    }
+    
+    public List<Double> getUniqueLivingSpacesFromDatabase() {
+        return repository.findUniqueLivingSpaces();
     }
 }
 

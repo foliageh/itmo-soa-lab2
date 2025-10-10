@@ -175,6 +175,14 @@ paths:
                 items:
                   type: number
                   format: double
+        "202":
+          description: Задача по поиску уникальных значений в работе
+        "404":
+          description: Задача не найдена
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Внутренняя ошибка сервера
           content:
@@ -184,7 +192,7 @@ paths:
     post:
       tags:
       - Flat API
-      summary: Получить уникальные значения жилой площади
+      summary: Запустить поиск уникальных значений жилой площади
       operationId: launchUniqueLivingSpacesJob
       responses:
         "204":
@@ -203,6 +211,8 @@ paths:
       responses:
         "204":
           description: Поиск уникальных значений жилой площади отменен
+        "404":
+          description: Задача не найдена
         "500":
           description: Внутренняя ошибка сервера
           content:

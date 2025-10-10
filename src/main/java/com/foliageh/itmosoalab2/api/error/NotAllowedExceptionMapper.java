@@ -1,7 +1,6 @@
 package com.foliageh.itmosoalab2.api.error;
 
 import jakarta.ws.rs.NotAllowedException;
-import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -16,8 +15,8 @@ public class NotAllowedExceptionMapper implements ExceptionMapper<NotAllowedExce
     public Response toResponse(NotAllowedException exception) {
         ErrorResponse body = ErrorResponse.builder()
                 .timestamp(OffsetDateTime.now())
-                .message("Метод не разрешён")
-                .errors(List.of(exception.getMessage() == null ? "Method Not Allowed" : exception.getMessage()))
+                .message("Не разрешено")
+                .errors(List.of(exception.getMessage() == null ? "Метод не разрешён" : exception.getMessage()))
                 .build();
         return Response.status(Response.Status.METHOD_NOT_ALLOWED)
                 .type(MediaType.APPLICATION_JSON)

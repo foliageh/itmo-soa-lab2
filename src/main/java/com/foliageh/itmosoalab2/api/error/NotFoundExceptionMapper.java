@@ -16,7 +16,7 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
         ErrorResponse body = ErrorResponse.builder()
                 .timestamp(OffsetDateTime.now())
                 .message("Не найдено")
-                .errors(List.of(exception.getMessage() == null ? "Not found" : exception.getMessage()))
+                .errors(List.of(exception.getMessage() == null ? "Не найдено" : exception.getMessage()))
                 .build();
         return Response.status(Response.Status.NOT_FOUND)
                 .type(MediaType.APPLICATION_JSON)

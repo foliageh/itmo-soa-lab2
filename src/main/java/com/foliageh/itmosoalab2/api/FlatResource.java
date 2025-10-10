@@ -72,8 +72,11 @@ public class FlatResource {
 
     @GET
     @Path("/unique-living-spaces")
-    public List<Double> getUniqueLivingSpaces() {
-        return service.getUniqueLivingSpaces();
+    public Response getUniqueLivingSpaces() {
+        List<Double> result = service.getUniqueLivingSpaces();
+        if (result == null)
+            return Response.accepted().build();
+        return Response.ok(result).build();
     }
 
     @POST
@@ -86,8 +89,9 @@ public class FlatResource {
     @DELETE
     @Path("/unique-living-spaces")
     public Response cancelUniqueLivingSpacesJob() {
-        service.cancelUniqueLivingSpacesJob();
-        return Response.noContent().build();
+        if (service.cancelUniqueLivingSpacesJob())
+            return Response.noContent().build();
+        else throw new NotFoundException("Задача не найдена");
     }
 }
 

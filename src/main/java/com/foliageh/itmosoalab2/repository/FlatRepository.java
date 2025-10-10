@@ -34,6 +34,9 @@ public interface FlatRepository extends BasicRepository<Flat, Integer> {
 
     @Query("WHERE number_of_rooms > :_rooms")
     List<Flat> findByRoomsGreaterThan(int _rooms);
+
+    @Query("SELECT DISTINCT living_space FROM Flat ORDER BY living_space")
+    List<Double> findUniqueLivingSpaces();
 }
 
 
