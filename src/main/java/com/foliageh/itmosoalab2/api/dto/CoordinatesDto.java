@@ -7,11 +7,11 @@ import lombok.Value;
 @Value
 public class CoordinatesDto {
     @NotNull
-    @DecimalMin(value = "-12.999", inclusive = true)
+    @DecimalMin(value = "-12.999")
     Long x;
 
     @NotNull
-    @DecimalMin(value = "-732.999", inclusive = true)
+    @DecimalMin(value = "-732.999")
     Float y;
 }
 

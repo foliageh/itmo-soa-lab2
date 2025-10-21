@@ -12,6 +12,8 @@ public final class FlatMapper {
                 .area(dto.getArea())
                 .number_of_rooms(dto.getNumber_of_rooms())
                 .living_space(dto.getLiving_space())
+                .price(dto.getPrice())
+                .has_balcony(dto.isHas_balcony())
                 .furnish(dto.getFurnish())
                 .transport(dto.getTransport())
                 .house(House.builder()
@@ -29,6 +31,8 @@ public final class FlatMapper {
         target.setArea(dto.getArea());
         target.setNumber_of_rooms(dto.getNumber_of_rooms());
         target.setLiving_space(dto.getLiving_space());
+        target.setPrice(dto.getPrice());
+        target.setHas_balcony(dto.isHas_balcony());
         target.setFurnish(dto.getFurnish());
         target.setTransport(dto.getTransport());
         target.setHouse(House.builder()

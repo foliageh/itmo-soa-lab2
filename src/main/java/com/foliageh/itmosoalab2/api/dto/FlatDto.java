@@ -28,6 +28,12 @@ public class FlatDto {
     @NotNull
     Double living_space;
 
+    @NotNull
+    Double price;
+
+    @NotNull
+    boolean has_balcony;
+
     Furnish furnish;
 
     @NotNull

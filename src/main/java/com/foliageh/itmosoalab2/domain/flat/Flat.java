@@ -54,6 +54,12 @@ public class Flat {
     @NotNull
     private Double living_space;
 
+    @NotNull
+    private Double price;
+
+    @NotNull
+    private boolean has_balcony;
+
     @Enumerated(EnumType.STRING)
     private Furnish furnish;
 

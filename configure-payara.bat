@@ -31,6 +31,8 @@ REM Создаем JDBC ресурс
 "%ASADMIN%" create-jdbc-resource --enabled=true --poolName=postgres-pool --target=domain datasources/PostgresDS
 "%ASADMIN%" create-resource-ref --enabled=true --target=server datasources/PostgresDS
 
+REM Плюс надо настроить http-listener на https на порт 8182
+
 REM Генерируем сертификат (везде пароль ставить password)
 REM cd C:\payara7\glassfish\domains\domain1\config
 REM $env:OPENSSL_CONF="C:\Program Files\Git\usr\ssl\openssl.cnf"
