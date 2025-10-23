@@ -1,6 +1,6 @@
 package com.foliageh.itmosoalab2.api.error;
 
-import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -10,15 +10,15 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Provider
-public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
+public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestException> {
     @Override
-    public Response toResponse(NotFoundException exception) {
+    public Response toResponse(BadRequestException exception) {
         ErrorResponse body = ErrorResponse.builder()
                 .timestamp(OffsetDateTime.now())
-                .message("Не найдено")
-                .errors(List.of(exception.getMessage() == null || "HTTP 404 Not Found".equals(exception.getMessage()) ? "Не найдено" : exception.getMessage()))
+                .message("Некорректный запрос")
+                .errors(List.of(exception.getMessage() == null ? "Неверные параметры запроса" : exception.getMessage()))
                 .build();
-        return Response.status(Response.Status.NOT_FOUND)
+        return Response.status(Response.Status.BAD_REQUEST)
                 .type(MediaType.APPLICATION_JSON)
                 .entity(body)
                 .build();

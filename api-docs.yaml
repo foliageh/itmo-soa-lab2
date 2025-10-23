@@ -229,17 +229,16 @@ paths:
       parameters:
       - name: sortBy
         in: query
-        description: "Поле для сортировки (name, area, numberOfRooms, etc.)"
+        description: "Поля для сортировки, через запятую без пробелов. Пример: name,area,number_of_rooms"
         required: false
         schema:
           type: string
       - name: sortDirection
         in: query
-        description: "Направление сортировки (asc, desc)"
+        description: "Направления сортировки (asc/desc), через запятую без пробелов. Количество должно точно совпадать с sortBy. Пример: asc,desc,asc"
         required: false
         schema:
           type: string
-          default: asc
       - name: pageNumber
         in: query
         description: Номер страницы (начиная с 0)
@@ -479,6 +478,15 @@ components:
           type: number
           format: double
           title: Жилая площадь
+        price:
+          type: integer
+          format: int32
+          description: "Минимальное значение: 1"
+          minimum: 1
+          title: Цена
+        has_balcony:
+          type: boolean
+          title: Наличие балкона
         furnish:
           type: string
           description: Обустройство дома
@@ -509,6 +517,8 @@ components:
       - name
       - number_of_rooms
       - transport
+      - price
+      - has_balcony
     House:
       type: object
       description: Дом
@@ -579,6 +589,15 @@ components:
           type: number
           format: double
           title: Жилая площадь
+        price:
+          type: integer
+          format: int32
+          description: "Минимальное значение: 1"
+          minimum: 1
+          title: Цена
+        has_balcony:
+          type: boolean
+          title: Наличие балкона
         furnish:
           type: string
           description: Обустройство дома
@@ -609,6 +628,8 @@ components:
       - name
       - number_of_rooms
       - transport
+      - price
+      - has_balcony
     ErrorResponse:
       type: object
       description: Ошибка при запросе
@@ -652,6 +673,14 @@ components:
           type: integer
           format: int32
           title: максимальная площадь
+        min_price:
+          type: integer
+          format: int32
+          title: минимальная цена
+        max_price:
+          type: integer
+          format: int32
+          title: максимальная цена
         furnish:
           type: string
           description: Обустройство дома
@@ -671,6 +700,9 @@ components:
           - LITTLE
           - ENOUGH
           title: транспорт
+        has_balcony:
+          type: boolean
+          title: наличие балкона
     FlatPageResponse:
       type: object
       description: Ответ с пагинированным списком квартир

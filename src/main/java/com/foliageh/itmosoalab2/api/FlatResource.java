@@ -50,7 +50,7 @@ public class FlatResource {
     @POST
     @Path("/filter")
     public FlatPageResponse getFlats(@QueryParam("sortBy") String sortBy,
-                                     @DefaultValue("asc") @QueryParam("sortDirection") String sortDirection,
+                                     @QueryParam("sortDirection") String sortDirection,
                                      @DefaultValue("0") @QueryParam("pageNumber") int pageNumber,
                                      @DefaultValue("20") @QueryParam("pageSize") int pageSize,
                                      @Valid FlatsFilterDto filter) {

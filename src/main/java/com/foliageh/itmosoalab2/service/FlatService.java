@@ -4,8 +4,8 @@ import com.foliageh.itmosoalab2.api.dto.FlatDto;
 import com.foliageh.itmosoalab2.api.dto.FlatPageResponse;
 import com.foliageh.itmosoalab2.api.dto.FlatsFilterDto;
 import com.foliageh.itmosoalab2.domain.flat.Flat;
-import com.foliageh.itmosoalab2.domain.flat.Furnish;
 import com.foliageh.itmosoalab2.domain.flat.FlatMapper;
+import com.foliageh.itmosoalab2.domain.flat.Furnish;
 import com.foliageh.itmosoalab2.repository.FlatRepository;
 import jakarta.data.Order;
 import jakarta.data.Sort;
@@ -15,6 +15,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -52,8 +53,26 @@ public class FlatService {
                                    String sortDirection,
                                    @Min(0) int pageNumber,
                                    @Min(1) int pageSize) {
-        String sortField = (sortBy == null || sortBy.isBlank()) ? "id" : sortBy;
-        Sort<Flat> sort = "desc".equalsIgnoreCase(sortDirection) ? Sort.desc(sortField) : Sort.asc(sortField);
+        Sort<Flat>[] sorts;
+        String[] fields = sortBy == null ? new String[]{} : sortBy.split(",");
+        String[] directions = sortDirection == null ? new String[]{} : sortDirection.split(",");
+        if (directions.length != fields.length)
+            throw new BadRequestException("Количество sortDirection должно совпадать с количеством sortBy");
+
+        if (fields.length == 0) {
+            sorts = new Sort[]{ Sort.asc("id") };
+        } else {
+            sorts = new Sort[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                String field = fields[i].toLowerCase();
+                String direction = directions[i].toLowerCase();
+                if (field.isEmpty() || direction.isEmpty())
+                    throw new BadRequestException("Пустое поле или направление сортировки не разрешено");
+                if (!"asc".equals(direction) && !"desc".equals(direction))
+                    throw new BadRequestException("Некорректное направление сортировки: " + direction);
+                sorts[i] = "asc".equals(direction) ? Sort.asc(field) : Sort.desc(field);
+            }
+        }
 
         PageRequest pageRequest = PageRequest.ofPage(pageNumber + 1).size(pageSize);
         Page<Flat> page = repository.findAllByFilter(
@@ -62,10 +81,13 @@ public class FlatService {
                 filter.getMax_area(),
                 filter.getMin_rooms(),
                 filter.getMax_rooms(),
+                filter.getMin_price(),
+                filter.getMax_price(),
                 filter.getFurnish(),
                 filter.getTransport(),
+                filter.getHas_balcony(),
                 pageRequest,
-                Order.by(sort)
+                Order.by(sorts)
         );
 
         return FlatPageResponse.builder()
@@ -90,7 +112,7 @@ public class FlatService {
             return null;
         if (asyncTaskService.isTaskCompleted())
             return asyncTaskService.getTaskResult();
-        throw new NotFoundException("No task found");
+        throw new NotFoundException("Задача не найдена");
     }
 
     public boolean launchUniqueLivingSpacesJob() {

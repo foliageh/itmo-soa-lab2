@@ -1,6 +1,6 @@
 package com.foliageh.itmosoalab2.service;
 
-import jakarta.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotAllowedException;
 
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SessionScoped
+@ApplicationScoped
 public class AsyncTaskService implements Serializable {
     private CompletableFuture<List<Double>> currentTask = null;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -24,11 +24,11 @@ public class AsyncTaskService implements Serializable {
         
         currentTask = CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
                 return flatService.getUniqueLivingSpacesFromDatabase();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException("Task was interrupted", e);
+                throw new RuntimeException("Задача была прервана", e);
             }
         }, executorService);
         
@@ -47,11 +47,11 @@ public class AsyncTaskService implements Serializable {
         if (currentTask == null)
             return null;
         if (!currentTask.isDone())
-            throw new NotAllowedException("Task is still in progress");
+            throw new NotAllowedException("Задача ещё выполняется");
         try {
             return currentTask.get();
         } catch (Exception e) {
-            throw new RuntimeException("Error getting task result", e);
+            throw new RuntimeException("Ошибки при получении результата задачи: " + e.getMessage());
         }
     }
 

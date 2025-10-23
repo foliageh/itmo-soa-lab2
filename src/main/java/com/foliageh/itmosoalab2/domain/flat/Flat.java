@@ -55,10 +55,11 @@ public class Flat {
     private Double living_space;
 
     @NotNull
-    private Double price;
+    @Min(1)
+    private Integer price;
 
     @NotNull
-    private boolean has_balcony;
+    private Boolean has_balcony;
 
     @Enumerated(EnumType.STRING)
     private Furnish furnish;

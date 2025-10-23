@@ -17,6 +17,8 @@ $body1 = @{
     area = 85
     number_of_rooms = 3
     living_space = 65.5
+    price = 15000000
+    has_balcony = $true
     furnish = "FINE"
     transport = "ENOUGH"
     house = @{
@@ -39,6 +41,8 @@ $body2 = @{
     area = 35
     number_of_rooms = 1
     living_space = 25.0
+    price = 4500000
+    has_balcony = $false
     furnish = "DESIGNER"
     transport = "FEW"
     house = @{
@@ -61,6 +65,8 @@ $body3 = @{
     area = 120
     number_of_rooms = 4
     living_space = 95.2
+    price = 32000000
+    has_balcony = $true
     furnish = "NONE"
     transport = "LITTLE"
     house = @{
@@ -99,6 +105,8 @@ $updateBody = @{
     area = 90
     number_of_rooms = 3
     living_space = 70.0
+    price = 17000000
+    has_balcony = $true
     furnish = "DESIGNER"
     transport = "ENOUGH"
     house = @{
@@ -123,12 +131,15 @@ $filterBody1 = @{
     max_area = $null
     min_rooms = $null
     max_rooms = $null
+    min_price = $null
+    max_price = $null
     furnish = $null
     transport = $null
+    has_balcony = $null
 } | ConvertTo-Json -Depth 2
 
 try {
-    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=2&sortBy=area&sortDirection=asc" -Method POST -Body $filterBody1 -ContentType "application/json"
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=2&sortBy=name,area,number_of_rooms&sortDirection=asc,desc,asc" -Method POST -Body $filterBody1 -ContentType "application/json"
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
@@ -140,12 +151,15 @@ $filterBody2 = @{
     max_area = 100
     min_rooms = $null
     max_rooms = $null
+    min_price = 4000000
+    max_price = 20000000
     furnish = $null
     transport = $null
+    has_balcony = $null
 } | ConvertTo-Json -Depth 2
 
 try {
-    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=10&sortBy=number_of_rooms&sortDirection=desc" -Method POST -Body $filterBody2 -ContentType "application/json"
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=10&sortBy=number_of_rooms,area&sortDirection=desc,asc" -Method POST -Body $filterBody2 -ContentType "application/json"
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
@@ -157,12 +171,15 @@ $filterBody3 = @{
     max_area = $null
     min_rooms = 2
     max_rooms = 4
+    min_price = $null
+    max_price = $null
     furnish = $null
     transport = $null
+    has_balcony = $true
 } | ConvertTo-Json -Depth 2
 
 try {
-    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=5&sortBy=name&sortDirection=asc" -Method POST -Body $filterBody3 -ContentType "application/json"
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=5&sortBy=name,number_of_rooms&sortDirection=asc,desc" -Method POST -Body $filterBody3 -ContentType "application/json"
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
@@ -174,8 +191,11 @@ $filterBody4 = @{
     max_area = $null
     min_rooms = $null
     max_rooms = $null
+    min_price = $null
+    max_price = $null
     furnish = "DESIGNER"
     transport = $null
+    has_balcony = $null
 } | ConvertTo-Json -Depth 2
 
 try {
@@ -207,30 +227,52 @@ try {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-# 7. Уникальные значения жилой площади (заглушки)
-Write-Host "`n14. Получение уникальных значений жилой площади:" -ForegroundColor Yellow
+# 7. Уникальные значения жилой площади (асинхронная задача)
+Write-Host "`n14. Запуск задачи поиска уникальных значений:" -ForegroundColor Yellow
 try {
-    Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method GET
+    $response = Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method POST -ContentType "application/json"
+    Write-Host "Задача запущена: $response" -ForegroundColor Green
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-Write-Host "`n15. Запуск задачи поиска уникальных значений:" -ForegroundColor Yellow
+Write-Host "`n15. Получение результата задачи (должен вернуться 202 Accepted):" -ForegroundColor Yellow
 try {
-    Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method POST -ContentType "application/json"
+    $response = Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method GET
+    Write-Host "Результат: $response" -ForegroundColor Green
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-Write-Host "`n16. Отмена задачи поиска уникальных значений:" -ForegroundColor Yellow
+Write-Host "`n16. Ожидание 7 секунд..." -ForegroundColor Yellow
+Start-Sleep -Seconds 7
+
+Write-Host "`n17. Повторное получение результата (должен вернуться результат):" -ForegroundColor Yellow
 try {
-    Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method DELETE
+    $response = Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method GET
+    Write-Host "Результат: $response" -ForegroundColor Green
+} catch {
+    Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "`n18. Попытка запустить задачу повторно:" -ForegroundColor Yellow
+try {
+    $response = Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method POST -ContentType "application/json"
+    Write-Host "Результат: $response" -ForegroundColor Green
+} catch {
+    Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "`n19. Отмена задачи поиска уникальных значений:" -ForegroundColor Yellow
+try {
+    $response = Invoke-RestMethod -Uri "$baseUrl/unique-living-spaces" -Method DELETE
+    Write-Host "Задача отменена: $response" -ForegroundColor Green
 } catch {
     Write-Host "Ошибка: $($_.Exception.Message)" -ForegroundColor Red
 }
 
 # 8. Удаление квартиры по ID
-Write-Host "`n17. Удаление квартиры с ID 1:" -ForegroundColor Yellow
+Write-Host "`n20. Удаление квартиры с ID 1:" -ForegroundColor Yellow
 try {
     Invoke-RestMethod -Uri "$baseUrl/1" -Method DELETE
 } catch {
@@ -238,14 +280,14 @@ try {
 }
 
 # 9. Тестирование ошибок
-Write-Host "`n18. Попытка получить несуществующую квартиру (должна вернуть 404):" -ForegroundColor Yellow
+Write-Host "`n21. Попытка получить несуществующую квартиру (должна вернуть 404):" -ForegroundColor Yellow
 try {
     Invoke-RestMethod -Uri "$baseUrl/999" -Method GET
 } catch {
     Write-Host "Ожидаемая ошибка 404: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-Write-Host "`n19. Попытка обновить несуществующую квартиру (должна вернуть 404):" -ForegroundColor Yellow
+Write-Host "`n22. Попытка обновить несуществующую квартиру (должна вернуть 404):" -ForegroundColor Yellow
 $invalidBody = @{
     name = "Несуществующая квартира"
     coordinates = @{
@@ -255,6 +297,8 @@ $invalidBody = @{
     area = 50
     number_of_rooms = 2
     living_space = 40.0
+    price = 0
+    has_balcony = $false
     furnish = "FINE"
     transport = "ENOUGH"
     house = @{
@@ -269,6 +313,28 @@ try {
     Invoke-RestMethod -Uri "$baseUrl/999" -Method PUT -Body $invalidBody -ContentType "application/json"
 } catch {
     Write-Host "Ожидаемая ошибка 404: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+# 10. Тестирование валидации сортировки
+Write-Host "`n23. Тестирование некорректной сортировки (неравное количество полей и направлений):" -ForegroundColor Yellow
+try {
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=10&sortBy=name,area&sortDirection=asc" -Method POST -Body $filterBody1 -ContentType "application/json"
+} catch {
+    Write-Host "Ожидаемая ошибка 400: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "`n24. Тестирование некорректной сортировки (неверное направление):" -ForegroundColor Yellow
+try {
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=10&sortBy=name&sortDirection=invalid" -Method POST -Body $filterBody1 -ContentType "application/json"
+} catch {
+    Write-Host "Ожидаемая ошибка 400: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "`n25. Тестирование некорректной сортировки (пустые поля):" -ForegroundColor Yellow
+try {
+    Invoke-RestMethod -Uri "$baseUrl/filter?pageNumber=0&pageSize=10&sortBy=,area&sortDirection=asc,desc" -Method POST -Body $filterBody1 -ContentType "application/json"
+} catch {
+    Write-Host "Ожидаемая ошибка 400: $($_.Exception.Message)" -ForegroundColor Red
 }
 
 Write-Host "`n=== Тестирование завершено ===" -ForegroundColor Green

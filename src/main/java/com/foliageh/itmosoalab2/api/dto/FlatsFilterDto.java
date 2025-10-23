@@ -11,8 +11,11 @@ public class FlatsFilterDto {
     Integer max_area;
     Integer min_rooms;
     Integer max_rooms;
+    Integer min_price;
+    Integer max_price;
     Furnish furnish;
     Transport transport;
+    Boolean has_balcony;
 }
 
 
