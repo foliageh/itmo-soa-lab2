@@ -3,12 +3,7 @@ package com.foliageh.itmosoalab2.domain.flat;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -29,6 +24,7 @@ public class Flat {
     private LocalDate creationDate;
 
     @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String name;
 
     @NotNull
@@ -52,6 +48,7 @@ public class Flat {
     private Integer number_of_rooms;
 
     @NotNull
+    @Positive
     private Double living_space;
 
     @NotNull

@@ -26,9 +26,11 @@ public class FlatDto {
     Integer number_of_rooms;
 
     @NotNull
+    @Positive
     Double living_space;
 
     @NotNull
+    @Min(1)
     Integer price;
 
     @NotNull

@@ -1,13 +1,11 @@
 package com.foliageh.itmosoalab2.api.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Value;
 
 @Value
 public class HouseDto {
+    @NotBlank
     String name;
 
     @NotNull
