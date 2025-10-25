@@ -18,11 +18,11 @@ import lombok.Setter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class Coordinates {
     @NotNull
-    @DecimalMin(value = "-12.999", inclusive = true)
+    @DecimalMin(value = "-13", inclusive = false)
     private Long x;
 
     @NotNull
-    @DecimalMin(value = "-732.999", inclusive = true)
+    @DecimalMin(value = "-733", inclusive = false)
     private Float y;
 }
 
