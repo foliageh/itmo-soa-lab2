@@ -3,7 +3,7 @@ chcp 65001
 REM Batch скрипт для тестирования REST API квартир
 REM Запуск: test-api.bat
 
-set BASE_URL=http://localhost:8080/itmo-soa-lab2-1.0/api/flats
+set BASE_URL=https://localhost:8182/itmo-soa-lab2-1.0/api/flats
 
 echo === Тестирование REST API для квартир ===
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-ejb-jar PUBLIC
+        "-//GlassFish.org//DTD Application Server 3.0//EN"
+        "http://glassfish.org/dtds/glassfish-ejb-jar_3_0-0.dtd">
+
+<glassfish-ejb-jar>
+    <enterprise-beans>
+
+        <ejb>
+            <ejb-name>FlatServiceBean</ejb-name>
+            <bean-pool>
+                <steady-pool-size>4</steady-pool-size>
+                <resize-quantity>4</resize-quantity>
+                <max-pool-size>32</max-pool-size>
+            </bean-pool>
+        </ejb>
+
+        <ejb>
+            <ejb-name>AsyncTaskServiceBean</ejb-name>
+            <bean-pool>
+                <steady-pool-size>2</steady-pool-size>
+                <resize-quantity>2</resize-quantity>
+                <max-pool-size>16</max-pool-size>
+            </bean-pool>
+        </ejb>
+    </enterprise-beans>
+</glassfish-ejb-jar>
+

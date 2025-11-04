@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>itmo-soa-lab2</artifactId>
+        <groupId>com.foliageh</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>web-app</artifactId>
+    <packaging>war</packaging>
+    <name>web-app</name>
+
+    <dependencies>
+        <!-- Зависимость от нашего EJB модуля -->
+        <dependency>
+            <groupId>com.foliageh</groupId>
+            <artifactId>business-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+
+        <!-- Jakarta EE Web Profile -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-web-api</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <!-- Consul API для Service Discovery -->
+        <dependency>
+            <groupId>com.ecwid.consul</groupId>
+            <artifactId>consul-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>itmo-soa-lab2</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <packagingIncludes>WEB-INF/lib/business-ejb-*.jar</packagingIncludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
