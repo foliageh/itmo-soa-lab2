@@ -34,13 +34,10 @@ public class ConsulRegistrationService {
 
             // Health check с отключенной SSL верификацией
             NewService.Check check = new NewService.Check();
-//            check.setHttp("https://localhost:8182/itmo-soa-lab2/api/flats/health");
-//            check.setTlsSkipVerify(true); // ← ВАЖНО: отключаем SSL верификацию
-//            check.setInterval("15s");     // Увеличим интервал для надежности
-//            check.setTimeout("10s");      // Увеличим timeout
-            check.setTcp("localhost:8182"); // Просто проверяет доступность порта
-            check.setInterval("15s");
-            check.setTimeout("10s");
+            check.setHttp("https://localhost:8182/itmo-soa-lab2/api/flats/health");
+            check.setTlsSkipVerify(true); // ← ВАЖНО: отключаем SSL верификацию
+            check.setInterval("15s");     // Увеличим интервал для надежности
+            check.setTimeout("10s");      // Увеличим timeout
             newService.setCheck(check);
 
             consulClient.agentServiceRegister(newService);
